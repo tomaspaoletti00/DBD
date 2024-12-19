@@ -1,0 +1,58 @@
+Ejercicio 5:
+
+Club=(codigoClub, nombre, anioFundacion, codigoCiudad(FK))
+Ciudad=(codigoCiudad, nombreC)
+Estadio=(codigoEstadio, codigoClub(FK), nombreE, direccion)
+Jugador=(dni, nombreJ, apellido, edad, codigoCiudad(FK))
+ClubJugador(codigoClub, dni, desde, hasta)
+
+1. Reportar nombre y año de fundación de clubes de la ciudad de La Plata, además del nombre y dirección del estadio del mismo.
+
+ClubesLP = σnombreC='LaPlata'(Ciudad ⨝ Club)
+π nombre, anioFundacion, nombreE, direccion(ClubLP ⨝ Estadio)
+
+2. Listar datos personales de jugadores actuales del club River Plate que hayan jugado en el club Boca Juniors.
+
+RiverJug= σnombre='River'(Club ⨝ ClubJugador ⨝ Jugador)
+BocaJug= σnombre='Boca'(Club ⟕ ClubJugador ⨝ Jugador)
+ActRiver= hasta>='11/12/2024'∨ hasta=null(RiverJug)
+JugoEnBoca= σhasta<='11/12/2024'(BocaJug)
+π dni,nombreJ,apellido,edad(RiverJug ∩ BocaJug)
+
+3.Listar información de todos los clubes donde se desempeñó el jugador: Marcelo Gallardo. Indicar nombre, año de fundación y localidad del club.
+
+Gallardo= σnombreJug='MarceloGallardo'(Jugador⨝ClubJugador⨝Club⨝Ciudad)
+π nombre,anioFundacion,nombreC(Gallardo)
+
+4. Reportar dni, nombre y apellido de aquellos jugadores que no tengan más de 25 años y jueguen en algún club de la ciudad de Junín.
+
+Jmenores25= σedad<=25(Jugador)
+ClubesJunin= σnombreC='Junin'(Club ⨝ Ciudad)
+π dni, nombre,apellido(Jmenores25 ⨝ ClubesJunin) 
+
+5. Mostrar el nombre de los clubes que tengan jugadores de la ciudad de Chivilcoy mayores de 25 años.
+
+Jmayores25= σedad>=25(Jugador)
+Actuales25= hasta>='11/12/24'∨ hasta=NULL(ClubJugador⨝Jmayores25)
+Chivilcoy= σnombreC='Chivilcoy'(Club ⨝ Ciudad)
+π nombre (Actuales25⨝ Chivilcoy)
+
+6. Reportar el nombre y apellido de aquellos jugadores que hayan jugado en todos los clubes.
+
+π nombreJ,apellido(Jugador⨝ClubJugador⨝Club)÷πnombre(Club)
+
+7. Listar nombre de los clubes que no hayan tenido ni tengan jugadores de la ciudad de La Plata.
+
+Platenses= σnombreC='LaPlata'(Jugador ⨝ Ciudad)
+ClubesConPlatenses= Club⨝ClubJugador⨝Platenses
+π nombre ((Club⨝ClubJugador⨝Jugador⨝Ciudad)-ClubesConPlatenses)
+
+8. Mostrar dni, nombre y apellido de aquellos jugadores que jugaron o juegan en el club: Club Atlético Rosario Central.
+
+RC= σnombre='RosarioCentral'(Club)
+JugadoresRC= (Jugador⨝ClubJugador⨝RC)
+πdni, nombre,apellido(JguadoresRC)
+
+9. Eliminar al jugador cuyo dni es: 24242424.
+JugDNI= σdni=24242424(Jugador)
+Jugador= Jugador - JugDNI

@@ -1,0 +1,27 @@
+Personas (dni, nombre, apellido, genero, telefono, email)
+Medicos (matricula, dni(FK), fechalngreso)
+Pacientes (dni(FK), fechaNacimiento, antecedentes)
+Especialidades (idEspecialidad, nombree, descripcion)
+MedicosEspecialidades (matricula(FK). idEspecialidad(FK))
+Atenciones (nroAtencion, matricula(FK), dni(FK), fecha, hora, motivo, diagnostico?, tratamiento? ) // dni se refiere al DNI del
+paciente atendido 
+
+1 - Listar matrícula, dni, nombre, apellido, teléfono y email de los médicos cuyo apellido sea “Garcia”.
+
+MedicosGarcia=σapellido='garcia'(Personas⨝Medicos)
+π matricula,dni,nombre,apellido,telefono,email(MedicosGarcia)
+
+2- Listar dni, nombre y apellido de aquellos pacientes que no recibieron atenciones durante 2024. 
+
+PacientesAtenciones2024=σfecha>='2024-01-01'∧fecha<='2024-12-31'(Atenciones⨝Persona⨝Paciente)
+PersonasConAtenciones=(Persona⨝Paciente⨝Atenciones)
+π dni,nombre,apellido(PersonasConAtenciones-PersonasAtenciones2024)
+
+3- Listar dni, nombre y apellido de los pacientes atendidos por todos los médicos especializados en “Cardiología”. 
+
+Cardiologia=σnombreE='Cardiologia'(Especialidad)
+Cardiologos=(Persona⨝Medicos⨝MedicosEspecialidades⨝Cardiologia)
+PacientesAtendidos=(Personas⨝Pacientes⨝Atenciones)
+πdni,nombre,apellido(PacientesAtendidos ÷ Cardiologos)
+
+

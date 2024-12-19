@@ -1,0 +1,68 @@
+Ejercicio 6:
+
+Proyecto(codProyecto, nombrP,descripcion, fechaInicioP, fechaFinP,fechaFinEstimada,DNIResponsable(fk), equipoBackend(fk), equipoFrontend(fk)) //DNIResponsable corresponde a un empleado, equipoBackend y equipoFrontend corresponden a un equipo
+Equipo(codEquipo,nombreE,descripcionTecnologias,DNILider(fk))//DNILider corresponde a unempleado
+Empleado(DNI,nombre, apellido, telefono, direccion, fechaIngreso)
+Empleado_Equipo(codEquipo,DNI,fechaInicio,fechaFin,descripcionRol)
+
+1. Listar nombre, descripción, fecha de inicio y fecha de fin de proyectos ya finalizados que no fueron terminados antes de la fecha de fin estimada.
+
+Condicion=σfechaFinP>=fechaFinEstimada∧fechaFinP<>null(Proyecto)
+π nombre,descripcion,fechaInicioP,fechaFinP(Condicion)
+
+2. Listar DNI, nombre, apellido, teléfono, dirección y fecha de ingreso de empleados que no hayan sido responsables de proyectos.
+
+πdni,nombre,apellido,telefono,direccion,fehcaIngreso(σDNI<>DNIResponsable(Empleado ⟕ Proyecto))
+
+3. Listar DNI, nombre, apellido, teléfono y dirección de todos los empleados que trabajan en el proyecto con nombre ‘Proyecto X’. No es necesario informar responsable y líderes.
+
+ProyectoX=σnombrP='ProyectoX'(Proyecto)
+BackEnd=πequipoBackend(ProyectoX)
+FrontEnd=πequipoFrontEnd(ProyectoX)
+
+EmpleadosBack=(Empleado_Equipo⨝Equipo⨝BackEnd)
+EmpleadosFront=(Empleado_Equipo⨝Equipo⨝FrontEnd)
+
+πDNI,nombre,apellido,telefono,direccion(EmpleadoBack ∪ EmpleadosFront)
+
+4. Listar nombre de equipo y datos personales de líderes de equipos que no tengan empleados asignados y trabajen con tecnología ‘Java’.
+
+EquipoJava = πnombreE(σdescripcionTecnologias = 'Java'(Equipo))  // Equipos con tecnología Java
+
+LideresJava = πDNI,nombre,apellido(Empleado ⨝ (EquipoJava ⨝ Equipo))  // Líderes de equipos Java
+
+EquiposConEmpleados = πcodEquipo(Empleado_Equipo)  // Equipos con empleados asignados
+
+EquiposSinEmpleados = EquipoJava - EquiposConEmpleados  // Equipos Java sin empleados asignados
+
+Resultado = EquiposSinEmpleados ⨝ LideresJava  // Equipos sin empleados y sus líderes
+
+5. Modificar nombre, apellido y dirección del empleado con DNI: 40568965 con los datos que desee.
+
+EmpleadoDNI=σDNI=40568965(Empleado)
+S nombre <= Tomas(EmpleadoDNI)
+S apellido <= Paoletti(EmpleadoDNI)
+S direccion <= Calle30(EmpleadoDNI)
+
+6. Listar DNI, nombre, apellido, teléfono y dirección de empleados que son responsables de proyectos pero no han sido líderes de equipo.
+
+Responsables<=πDNI(Empleado⨝Proyecto)
+Lideres<=πDNI(Empleado⨝Equipo)
+πDNI,nombre,apellido,tel,direc(Responsables - Lideres)
+
+7. Listar nombre de equipo y descripción de tecnologías de equipos que hayan sido asignados como equipos frontend y backend.
+
+EquiposBackEnd=πequipoBackend(Equipo⨝Proyecto)
+EquipoFrontEnd=πequipoFrontEnd(Equipo⨝Proyecto)
+πnombreE,descripcionTecnologias(EquiposBackEnd ∩ EquipoFrontEnd)
+
+8. Listar nombre, descripción, fecha de inicio, nombre y apellido de responsables de proyectos a finalizar durante 2019.
+
+FinProyecto=σFechaFinEstimada>='2019-01-01'∧'2019-12-31'(Proyecto)
+Responsables=(Empleado⨝FinProyecto)
+πnombreP,descripcion,fechaInicioP,nombre,apellido(Responsables)
+
+9.Listar nombre de equipo, descripción de tecnología y la información personal del líder, de equipos que no estén asignados a ningún proyecto aun.
+
+EquiposEnProyectos=(Proyecto⨝Equipo)
+πnombreE,descripcionTeconlogias,nombre,apellido((Equipo-EquiposEnProyectos)⨝Empleado)
